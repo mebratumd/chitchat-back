@@ -1,4 +1,4 @@
-//require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -32,7 +32,7 @@ app.use((err,req,res,next)=>{
 io.of("/chat").on("connection",(socket)=>{
 
   socket.on("join",(ob)=>{
-
+    console.log("joined");
     Room.findOne({socket_Room:ob.id,password:ob.password}).exec((err,room)=>{
       if (err) console.log(err);
       if (room) {
