@@ -47,10 +47,6 @@ io.of("/chat").on("connection",(socket)=>{
 
   });
 
-  socket.on("msg",(ob)=>{
-    io.of("/chat").in(socket.rooms[socket.roomID]).emit("updateLog",{updateLog:ob.txt,sender:ob.sender,date:new Date().getTime()});
-  });
-
   socket.on("disconnect",() => {
 
     Room.findOne({socket_Room:socket.roomID}).exec((err,room)=>{
@@ -62,6 +58,11 @@ io.of("/chat").on("connection",(socket)=>{
       }
     });
 
+
+  });
+
+  socket.on("msg",(ob)=>{
+    io.of("/chat").in(socket.rooms[socket.roomID]).emit("updateLog",{updateLog:ob.txt,sender:ob.sender,date:new Date().getTime()});
   });
 
   socket.on("sendToNewUser",(ob) => {
