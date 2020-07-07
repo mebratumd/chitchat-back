@@ -69,10 +69,17 @@ check('password').matches(/^[0-9a-zA-Z]+$/).withMessage('Room password must be a
         if (err) next(err);
         if (response) {
           if (room.users.indexOf(req.body.username) == -1) {
-            room.users.push(req.body.username);
-            room.save().then(()=>{
-              return res.json({success:true,room:room});
-            }).catch((err) => next(err));
+            if (room.users.length < 7) {
+
+              room.users.push(req.body.username);
+              room.save().then(()=>{
+                return res.json({success:true,room:room});
+              }).catch((err) => next(err));
+
+            } else {
+              return res.status(403).json({errors:[{msg:'Max of 8 ppl allowed per room.'}]});
+            }
+
           } else {
             return res.status(422).json({errors:[{msg:'User is already in room.'}]})
           }

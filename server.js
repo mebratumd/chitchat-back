@@ -1,4 +1,4 @@
-//require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -32,7 +32,6 @@ app.use((err,req,res,next)=>{
 io.of("/chat").on("connection",(socket)=>{
 
   socket.on("join",(ob)=>{
-    console.log("joined");
     Room.findOne({socket_Room:ob.id,password:ob.password}).exec((err,room)=>{
       if (err) console.log(err);
       if (room) {
@@ -62,13 +61,14 @@ io.of("/chat").on("connection",(socket)=>{
   });
 
   socket.on("msg",(ob)=>{
-    io.of("/chat").in(socket.rooms[socket.roomID]).emit("updateLog",{updateLog:ob.txt,sender:ob.sender,date:new Date().getTime()});
+    const re = new RegExp('^\\s*$');
+    if (!re.test(ob.txt) && ob.txt.length >= 1) {
+        io.of("/chat").in(socket.rooms[socket.roomID]).emit("updateLog",{updateLog:ob.txt,sender:ob.sender,date:new Date().getTime()});
+    }
   });
 
   socket.on("sendToNewUser",(ob) => {
-
     io.of("/chat").in(socket.rooms[socket.roomID]).emit("addUser",ob.username);
-
   });
 
 
